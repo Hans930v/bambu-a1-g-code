@@ -145,7 +145,7 @@ M400
 
 
 ; === Wipe after purge ===
-M106 P1 S178         ; fan speed
+M106 P1 S204         ; fan speed
 M400 S3              ; wait 3 sec
 
 G1 X-38.2 F18000
@@ -168,7 +168,7 @@ G1 E-[new_retract_length_toolchange] F1800
 
 ; wipe
 M400
-M106 P1 S178
+M106 P1 S204
 M400 S3
 G1 X-38.2 F18000
 G1 X-48.2 F3000
