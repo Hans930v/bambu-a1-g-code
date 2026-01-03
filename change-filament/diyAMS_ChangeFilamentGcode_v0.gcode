@@ -12,7 +12,7 @@
 ;
 ; Original Files:
 ;   a) AMS reference version (A1 2025-10-31):
-;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
+;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
 ;   b) Manual Filament Change v2:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
 ;   c) Manual filament change v1:
