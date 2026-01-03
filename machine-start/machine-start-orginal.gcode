@@ -1,5 +1,5 @@
 ;===== machine: A1 =========================
-;===== date: 20240620 =====================
+;===== date: 20250822 ==================
 G392 S0
 M9833.2
 ;M400
@@ -118,7 +118,7 @@ M620 S[initial_no_support_extruder]A   ; switch material if AMS exist
     G1 X-48.2 F3000
     M400
 
-    M620.1 E F{filament_max_volumetric_speed[initial_no_support_extruder]/2.4053*60} T{nozzle_temperature_range_high[initial_no_support_extruder]}
+    M620.1 E F{flush_volumetric_speeds[initial_no_support_extruder]/2.4053*60} T{flush_temperatures[initial_no_support_extruder]}
     M109 S250 ;set nozzle to common flush temp
     M106 P1 S0
     G92 E0
@@ -127,7 +127,7 @@ M620 S[initial_no_support_extruder]A   ; switch material if AMS exist
     M1002 set_filament_type:{filament_type[initial_no_support_extruder]}
 M621 S[initial_no_support_extruder]A
 
-M109 S{nozzle_temperature_range_high[initial_no_support_extruder]} H300
+M109 S{flush_temperatures[initial_no_support_extruder]} H300
 G92 E0
 G1 E50 F200 ; lower extrusion speed to avoid clog
 M400
