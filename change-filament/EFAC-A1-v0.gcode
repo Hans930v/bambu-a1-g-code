@@ -11,11 +11,11 @@
 ;   https://github.com/avatorl/bambu-a1-g-code
 ;
 ; Original Files:
-;   a) AMS reference version (A1 2025-10-31):
+;   - AMS reference version (A1 2025-10-31):
 ;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
-;   b) Manual Filament Change v2:
+;   - Manual Filament Change v2:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
-;   c) Manual filament change v1:
+;   - Manual filament change v1:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v1.gcode
 ;
 ; =========================================================================
@@ -67,9 +67,9 @@ M400                 ; wait
 ; === Unload filament ===
 G1 E3 F80
 G1 E-30 F1000        ; retract 30 mm
-G1 Y236 F18000       ; fast bed move closer to sensor
-G1 Y256 F3000        ; bed to feeder listening mode
-M400 S2              ; wait 2 sec
+G1 Y256 F18000       ; bed to feeder enter encoding mode
+G1 Y236 F18000
+M400                 ; wait
 
 ; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
@@ -84,7 +84,8 @@ M400 S2              ; wait 2 sec
 
 {if next_extruder >= 0 && next_extruder <= 30}
 G1 X{-38.2 + (next_extruder * 10)} F3000 ; safe slot move
-M400 S3
+M400
+G1 Y256 F18000        ; bed to feeder exit encoding mode
 {else}
 M400 U1 ;invalid slot user pause
 {endif}
