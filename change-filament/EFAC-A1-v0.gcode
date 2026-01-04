@@ -1,22 +1,21 @@
 ; =========================================================================
-; External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Not an AMS… but kinda feels like it
+; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
+; Version: EFAC-A1 v0.2 (2026-01-04)
+; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
 ; This system provides AMS-like behavior using an external feeder,
 ; without using the AMS port, AMS firmware, or internal printer hardware.
 ; =========================================================================
-; Original Author & Base Logic:
-;   avatorl
-;   https://github.com/avatorl/bambu-a1-g-code
-;
 ; Original Files:
 ;   - AMS reference version (A1 2025-10-31):
 ;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
-;   - Manual Filament Change v2:
+;   - Manual Filament Change v2 by avatorl:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
-;   - Manual filament change v1:
+;   - Manual filament change v1 by avatorl:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v1.gcode
+;	- Reduce Purge by Leon Fisher-Skipper:
+;	   https://makerworld.com/en/models/91241-reduce-purge-by-up-to-45-obsolete
 ;
 ; =========================================================================
 ; This file is a DERIVATIVE WORK based on the original implementation above.
