@@ -1,5 +1,5 @@
 ; =========================================================================
-; External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
+; External Feeder–Assisted Filament Change for Bambu Lab A1 
 ; Not an AMS… but kinda feels like it
 ; =========================================================================
 ; NOTE:
@@ -12,7 +12,9 @@
 ;
 ; Original Files:
 ;   a) AMS reference version (A1 2025-10-31):
-;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
+;      link
+;   a) AMS reference version (A1 2025-02-06):
+;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
 ;   b) Manual Filament Change v2:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
 ;   c) Manual filament change v1:
@@ -65,38 +67,33 @@ G1 X-48.2 F3000      ; slow move to wiper end
 M400                 ; wait
 
 ; === Unload filament ===
+G1 E3 F80
 G1 E-30 F1000        ; retract 30 mm
+G1 Y236 F18000       ; fast bed move closer to sensor
 M400                 ; wait
-G1 Y246 F10000       ; fast bed move
-G1 Y256 F1000        ; bed to feeder listening mode
-M400 S2              ; wait 2 sec
 
 ; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
 ;
-; next_extruder == 0 → filament #1
-; ...
-; next_extruder == 30 → filament #31
+; next_extruder >= 0 → filament #1
+; next_extruder <= 30 → filament #31
 ; Slots spaced in 10 mm increments from X-38.2 (slot 1) to X261.8 (slot 31).
 ; Higher filament number = farther right.
 ;
 ; Would you really print with 31 different filaments? (Yes, it's supported… but why???)
 
 {if next_extruder >= 0 && next_extruder <= 30}
-G1 X{-38.2 + (next_extruder * 10)} F3000 ; safe slot move
+G1 X{-38.2 + (next_extruder * 10)} Y256 F3000 ; safe slot move and bed to feeder listening mode
+G1 Y236 18000
 M400 S3
 {else}
 M400 U1 ;invalid slot user pause
 {endif}
 
-
-; Excessive, but included for anyone crazy enough to attempt 31 filaments
-
 ; === Reset wiper & feeder listening ===
 G1 X-38.2 Y128 F18000
 G1 X-48.2 F3000
 M400
-
 
 ; === Wait for external feeder ===
 ; This is the part where the printer just stares into space
@@ -145,7 +142,7 @@ M400
 
 
 ; === Wipe after purge ===
-M106 P1 S204         ; fan speed
+M106 P1 S178         ; fan speed
 M400 S3              ; wait 3 sec
 
 G1 X-38.2 F18000
@@ -168,7 +165,7 @@ G1 E-[new_retract_length_toolchange] F1800
 
 ; wipe
 M400
-M106 P1 S204
+M106 P1 S178
 M400 S3
 G1 X-38.2 F18000
 G1 X-48.2 F3000
