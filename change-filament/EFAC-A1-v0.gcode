@@ -109,13 +109,13 @@ M400 S15             ; external feeder swaps filament here
 ; === Load new filament ===
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
 M412 S1					; re-enable filament runout detection
-G1 E13 F200          			; gentle initial load
+G1 E13 F200          	; gentle initial load
 G1 E2 F20				; slower load
-M400              			; short pause
+M400              		; short pause
 
 G92 E0					; reset extruder
 G1 E70 F500          			
-G1 E5 F120                              ; complete load (total 90 mm)
+G1 E5 F120                      ; complete load (total 90 mm)
 M400                 			; wait
 
 ; Inform firmware: new filament active
