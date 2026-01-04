@@ -68,9 +68,8 @@ M400                 ; wait
 G1 E3 F80
 G1 E-30 F1000        ; retract 30 mm
 G1 Y236 F18000       ; fast bed move closer to sensor
-M400                 ; wait
-;G1 Y256 F3000        ; bed to feeder listening mode
-;M400 S2              ; wait 2 sec
+G1 Y256 F3000        ; bed to feeder listening mode
+M400 S2              ; wait 2 sec
 
 ; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
@@ -84,8 +83,7 @@ M400                 ; wait
 ; Would you really print with 31 different filaments? (Yes, it's supported… but why???)
 
 {if next_extruder >= 0 && next_extruder <= 30}
-G1 X{-38.2 + (next_extruder * 10)} Y256 F3000 ; safe slot move and bed to feeder listening mode
-G1 Y236 18000
+G1 X{-38.2 + (next_extruder * 10)} F3000 ; safe slot move
 M400 S3
 {else}
 M400 U1 ;invalid slot user pause
