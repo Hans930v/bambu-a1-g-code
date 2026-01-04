@@ -12,9 +12,7 @@
 ;
 ; Original Files:
 ;   a) AMS reference version (A1 2025-10-31):
-;      link
-;   a) AMS reference version (A1 2025-02-06):
-;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
+;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
 ;   b) Manual Filament Change v2:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
 ;   c) Manual filament change v1:
@@ -71,11 +69,14 @@ G1 E3 F80
 G1 E-30 F1000        ; retract 30 mm
 G1 Y236 F18000       ; fast bed move closer to sensor
 M400                 ; wait
+;G1 Y256 F3000        ; bed to feeder listening mode
+;M400 S2              ; wait 2 sec
 
 ; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
 ;
 ; next_extruder >= 0 → filament #1
+; ...
 ; next_extruder <= 30 → filament #31
 ; Slots spaced in 10 mm increments from X-38.2 (slot 1) to X261.8 (slot 31).
 ; Higher filament number = farther right.
@@ -94,6 +95,7 @@ M400 U1 ;invalid slot user pause
 G1 X-38.2 Y128 F18000
 G1 X-48.2 F3000
 M400
+
 
 ; === Wait for external feeder ===
 ; This is the part where the printer just stares into space
