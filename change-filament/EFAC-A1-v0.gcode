@@ -12,8 +12,6 @@
 ;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
 ;   - Manual Filament Change v2 by avatorl:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
-;   - Manual filament change v1 by avatorl:
-;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v1.gcode
 ;	- Reduce Purge by Leon Fisher-Skipper:
 ;	   https://makerworld.com/en/models/91241-reduce-purge-by-up-to-45-obsolete
 ;
@@ -24,18 +22,23 @@
 ;   - External feeder integration (NO AMS, firmware-safe)
 ;   - Removal of sound-based filament selection
 ;   - External feeder-controlled filament unload/load
+;	- Reduced Purge
+;	- Fixed Purge
 ;
 ; All credit for the original filament change logic belongs to avatorl.
 ; This version only extends the workflow to support external hardware.
 ; =========================================================================
 
+
 ; === Initialization ===
 G392 S0			; turn off clog detection
 M204 S9000		; set print acceleration
 
+
 ; === Lift toolhead ===
 G1 Z{max_layer_z + 3.0} F1200			; lift nozzle 3mm above highest layer
 M400									; wait for all moves to finish
+
 
 ; === Reheat nozzle ===
 M106 P1 S0								; turn off part cooling fan
@@ -43,6 +46,7 @@ M106 P1 S0								; turn off part cooling fan
 {if old_filament_temp > 142 && next_extruder < 255}
 M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 {endif}
+
 
 ; === Cut filament ===
 M412 S0					; disable runout detection temporarily
@@ -58,14 +62,17 @@ G1 X283 E-5 F80
 G1 X260 F6000	; move away from cutter
 M400			; wait for all moves to finish
 
+
 ; === Purge wiper ===
 G1 X-38.2 F18000     ; fast move to wiper start
 G1 X-48.2 F3000      ; slow move to wiper end
 M400                 ; wait
 
+
 ; === Unload filament ===
 G1 E3 F80			; slight push
 G1 E-30 F1000		; retract 30 mm
+
 
 ; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
@@ -85,6 +92,7 @@ M400 P300	;300ms wait
 M400 U1		;invalid slot user pause
 {endif}
 
+
 ; === Reset wiper & feeder encoding ===
 G1 X-38.2 F18000
 G1 X-48.2 F3000
@@ -96,11 +104,11 @@ M400
 ; while the feeder does the heavy lifting.
 
 M400 S15             ; external feeder swaps filament here
-; Future: replace with timed pauses
-
+; Future: replace with shorter timed pauses
 ; External Feeder will:
 ;   - Pull out old filament
 ;   - Push in new filament
+
 
 ; === Load new filament ===
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
@@ -120,6 +128,7 @@ G92 E0	; reset extruder
 M1002 set_filament_type:{filament_type[next_extruder]}
 M1002 set_filament_loaded:1
 M1002 set_filament_changed:1
+
 
 ; === Purge (no AMS) ===
 M109 S[nozzle_temperature_range_high]
@@ -151,6 +160,7 @@ G1 X-48.2 F3000
 M106 P1 S0
 M400
 
+
 ; === Finalizing ===
 M400
 M106 P1 S60
@@ -174,6 +184,7 @@ M400
 
 G1 Z{max_layer_z + 3.0} F3000
 M106 P1 S0	; turn off fan
+
 
 ; === Restore acceleration ===
 {if layer_z <= (initial_layer_print_height + 0.001)}
