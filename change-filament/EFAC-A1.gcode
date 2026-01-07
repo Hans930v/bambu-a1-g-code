@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: EFAC-A1 v0.3 (2026-01-04)
+; Version: v0.3.3 (2026-01-07 21:31)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
@@ -25,7 +25,6 @@
 ;	- Reduced Purge
 ;	- Fixed Purge
 ;
-; All credit for the original filament change logic belongs to avatorl.
 ; This version only extends the workflow to support external hardware.
 ; =========================================================================
 
@@ -86,10 +85,10 @@ G1 E-30 F1000		; retract 30 mm
 ; Would you really print with 25 different filaments? (Yes, it's supported… but why???)
 
 {if next_extruder >= 0 && next_extruder <= 24}
-G1 X{-19 + (next_extruder * 10)} F3000 ; safe slot move
-M400 P300	;300ms wait
+G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
+M400 P400	; 400ms wait
 {else}
-M400 U1		;invalid slot user pause
+M400 U1		; invalid slot user pause
 {endif}
 
 
@@ -113,13 +112,13 @@ M400 S15             ; external feeder swaps filament here
 ; === Load new filament ===
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
 M412 S1					; re-enable filament runout detection
-G1 E2 F500				; fast short grab
-G1 E10 F200          	; gentle initial grab
+G1 E5 F500				; fast short initial grab
+G1 E7 F200          	; gentle grab
 G1 E3 F20				; slower load
 M400              		; short pause
 
 G92 E0					; reset extruder
-G1 E70 F500          			
+G1 E70 F250          	; purge old filament
 G1 E5 F120				; complete load (total 90 mm)
 M400					; wait
 
@@ -130,9 +129,9 @@ M1002 set_filament_loaded:1
 M1002 set_filament_changed:1
 
 
-; === Purge (no AMS) ===
-M109 S[nozzle_temperature_range_high]
-M106 P1 S60
+; === Fixed Purge & Pressure Stabilization ===
+M109 S[new_filament_temp]
+M106 P1 S51 ; 20% fan speed
 G92 E0
 G1 E18 F{new_filament_e_feedrate}
 G1 E2 F120
@@ -148,7 +147,7 @@ M400
 
 
 ; === Wipe after purge ===
-M106 P1 S204	; fan speed
+M106 P1 S204	; 80% fan speed
 M400 S3			; wait 3 sec
 
 G1 X-38.2 F18000
@@ -162,16 +161,15 @@ M400
 
 
 ; === Finalizing ===
-M400
-M106 P1 S60
+M106 P1 S178						; 70% fan speed
 M109 S[new_filament_temp]
 G1 E6 F{new_filament_e_feedrate}	; compensate for spillage
 M400
 G92 E0 								; reset extruder
 G1 E-[new_retract_length_toolchange] F1800
+M400
 
 ; wipe
-M400
 M106 P1 S204
 M400 S3
 G1 X-38.2 F18000
@@ -193,7 +191,8 @@ M204 S[initial_layer_acceleration]
 M204 S[default_acceleration]
 {endif}
 
-G392 S0		; disable clog detection
+;uncomment this if you're using clog detection
+;G392 S1		; enable clog detection
 M629		; finalize filament change lifecycle
 
 ; === Resume printing ===
