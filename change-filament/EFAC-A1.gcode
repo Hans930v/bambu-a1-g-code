@@ -12,8 +12,6 @@
 ;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
 ;   - Manual Filament Change v2 by avatorl:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v2.gcode
-;	- Reduce Purge by Leon Fisher-Skipper:
-;	   https://makerworld.com/en/models/91241-reduce-purge-by-up-to-45-obsolete
 ;
 ; =========================================================================
 ; This file is a DERIVATIVE WORK based on the original implementation above.
@@ -41,7 +39,6 @@ M400									; wait for all moves to finish
 
 ; === Reheat nozzle ===
 M106 P1 S0								; turn off part cooling fan
-
 {if old_filament_temp > 142 && next_extruder < 255}
 M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 {endif}
@@ -49,7 +46,9 @@ M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 
 ; === Cut filament ===
 M412 S0					; disable runout detection temporarily
-G1 E-15 F1000			; retract 15 mm
+G1 E-7 F150				; retract 7 mm
+G1 E-3 F120				; retract 3mm
+G1 E-5 F90				; retract 2mm
 G1 X267 F18000			; fast move to cutter
 G1 X278 F400			; slow move to cutter
 ; If cutter error occurs, reduce X value slightly (use 2nd/3rd row)
@@ -112,9 +111,9 @@ M400 S15             ; external feeder swaps filament here
 ; === Load new filament ===
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
 M412 S1					; re-enable filament runout detection
-G1 E5 F500				; fast short initial grab
-G1 E7 F200          	; gentle grab
-G1 E3 F20				; slower load
+G1 E7 F500				; fast short initial grab (7mm)
+G1 E5 F200          	; gentle grab (5mm)
+G1 E3 F20				; slower load (3mm)
 M400              		; short pause
 
 G92 E0					; reset extruder
@@ -131,7 +130,7 @@ M1002 set_filament_changed:1
 
 ; === Fixed Purge & Pressure Stabilization ===
 M109 S[new_filament_temp]
-M106 P1 S51 ; 20% fan speed
+M106 P1 S60
 G92 E0
 G1 E18 F{new_filament_e_feedrate}
 G1 E2 F120
