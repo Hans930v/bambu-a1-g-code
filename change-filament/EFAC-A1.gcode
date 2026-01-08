@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: v0.3.3 (2026-01-07 21:31)
+; Version: v0.3.4 (2026-01-08)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
@@ -28,13 +28,21 @@
 
 
 ; === Initialization ===
+M1007 S0 		; turn off mass estimation
 G392 S0			; turn off clog detection
 M204 S9000		; set print acceleration
 
 
 ; === Lift toolhead ===
-G1 Z{max_layer_z + 3.0} F1200			; lift nozzle 3mm above highest layer
-M400									; wait for all moves to finish
+{if toolchange_count > 1}
+G17
+G2 Z{max_layer_z + 0.4} I0.86 J0.86 P1 F10000 	; 0.4mm spiral ooze-catch
+G1 Z{max_layer_z + 3.0} F1200                	; remaining +2.6mm to safe height
+M400
+{else}
+G1 Z{max_layer_z + 3.0} F1200                	; single lift on first toolchange
+M400
+{endif}
 
 
 ; === Reheat nozzle ===
@@ -100,7 +108,7 @@ M400
 ; === Wait for external feeder ===
 ; This is the part where the printer just stares into space
 ; while the feeder does the heavy lifting.
-
+M1002 set_filament_type:UNKNOWN
 M400 S15             ; external feeder swaps filament here
 ; Future: replace with shorter timed pauses
 ; External Feeder will:
@@ -192,6 +200,7 @@ M204 S[default_acceleration]
 
 ;uncomment this if you're using clog detection
 ;G392 S1		; enable clog detection
+M1007 S1 	; restore mass estimation
 M629		; finalize filament change lifecycle
 
 ; === Resume printing ===
