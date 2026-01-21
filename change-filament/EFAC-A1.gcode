@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: 0.9.0 (2026-01-09)
+; Version: 0.9.1 (2026-01-21)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; STATUS:
