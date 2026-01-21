@@ -4,7 +4,7 @@
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
-; This system provides AMS-like behavior using an external feeder,
+; This system provides AMS-like behavior without using an external feeder,
 ; without using the AMS port, AMS firmware, or internal printer hardware.
 ; =========================================================================
 ; Original Files:
