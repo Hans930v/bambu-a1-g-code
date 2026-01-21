@@ -1,11 +1,11 @@
 ; =========================================================================
-; EFAmC-A1: External Feeder–Assisted Manual Filament Change for Bambu Lab A1
+; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
 ; Version: 1.0.0 (2026-01-09)
 ; Manual AMS, I guess?
 ; =========================================================================
 ; NOTE:
-; This system provides AMS-like behavior without using an external feeder,
-; the AMS port, AMS firmware, or internal printer hardware.
+; This system provides AMS-like behavior using an external feeder,
+; without using the AMS port, AMS firmware, or internal printer hardware.
 ; =========================================================================
 ; Original Files:
 ;   - AMS reference version (A1 2025-10-31):
@@ -31,7 +31,6 @@ M204 S9000		; set print acceleration
 
 ; === Lift toolhead ===
 {if toolchange_count > 1}
-
 G17
 G2 Z{max_layer_z + 0.4} I0.86 J0.86 P1 F10000 	; 0.4mm spiral ooze-catch
 G1 Z{max_layer_z + 3.0} F1200                	; remaining +2.6mm to safe height
@@ -51,9 +50,9 @@ M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 
 ; === Cut filament ===
 M412 S0					; disable runout detection temporarily
-G1 E-7 F150				; retract 7 mm
+G1 E-7 F200				; retract 7 mm
+G1 E-5 F180				; retract 5mm
 G1 E-3 F120				; retract 3mm
-G1 E-5 F90				; retract 2mm
 G1 X267 F18000			; fast move to cutter
 G1 X278 F400			; slow move to cutter
 ; If cutter error occurs, reduce X value slightly (use 2nd/3rd row)
@@ -73,7 +72,7 @@ M400                 ; wait
 
 
 ; === Unload filament ===
-G1 E3 F80			; slight push
+G1 E3 F120			; slight push
 G1 E-30 F1000		; retract 30 mm
 
 
@@ -321,6 +320,7 @@ M204 S[default_acceleration]
 
 ;uncomment this if you're using clog detection, just remove ; before G392
 ;G392 S1		; enable clog detection
+
 M1007 S1 	; restore mass estimation
 M629		; finalize filament change lifecycle
 
