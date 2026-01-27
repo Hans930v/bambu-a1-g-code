@@ -1,6 +1,4 @@
-# DIY External Feeder–Assisted Filament Change for Bambu Lab A1 (Experimental)
-
-![DIY AMS](images/placeholder.png) <!-- Optional image -->
+# External Feeder–Assisted Filament Change for Bambu Lab A1 (Experimental)
 
 ## Overview
 
@@ -13,9 +11,9 @@ It is currently *experimental* — movements simulate filament changes, but no e
 ## Features
 
 - *External Feeder Integration (mocked)* – the printer executes filament change movements compatible with an external feeder.
-- *Supports up to 31 filaments* – customizable X-slot positions for up to 31 spools.
+- *Supports up to 27 filaments* – customizable X-slot positions for up to 31 spools.
 - *Pressure Relief and Purge Logic* – pulsatile extrusion ensures clean filament transitions.
-- *Multi-material Testing* – tested with PLA and PETG (I learned that these two materials don't like each other but I tested if it would change the nozzle temp).
+- *Multi-material Testing* – tested with PLA and PETG (I learned that these two materials don't like each other, but I tested if it would change the nozzle temp).
 - *Firmware-safe* – does not modify printer firmware or require AMS modules.
 
 ---
@@ -61,7 +59,7 @@ It is currently *experimental* — movements simulate filament changes, but no e
 
 - Movements are currently *mock only*; no real feeder is integrated yet.
 - Multi-material experiments (PLA & PETG) confirmed *temperature adjustments work*, but adhesion between different filament types fail.
-- Up to *31 filaments supported*, but would really need it?
+- Up to *27 filaments supported*, but would really need it?
 
 ---
 
