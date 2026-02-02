@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.1 (2026-01-21)
+; Version: 1.0.2 (2026-02-03)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
