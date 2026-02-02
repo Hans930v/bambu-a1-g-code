@@ -49,10 +49,11 @@ M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 
 
 ; === Cut filament ===
+M400
 M412 S0					; disable runout detection temporarily
-G1 E-7 F200				; retract 7 mm
-G1 E-5 F180				; retract 5mm
-G1 E-3 F120				; retract 3mm
+G1 E-7 F250				; retract 7 mm
+G1 E-5 F230				; retract 5mm
+G1 E-3 F210				; retract 3mm
 G1 X267 F18000			; fast move to cutter
 G1 X278 F400			; slow move to cutter
 ; If cutter error occurs, reduce X value slightly (use 2nd/3rd row)
