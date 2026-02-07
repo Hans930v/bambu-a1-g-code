@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.2 (2026-02-03)
+; Version: 1.0.3 (2026-02-07)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; NOTE:
@@ -51,6 +51,7 @@ M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 ; === Cut filament ===
 M400
 M412 S0					; disable runout detection temporarily
+M400
 G1 E-7 F250				; retract 7 mm
 G1 E-5 F230				; retract 5mm
 G1 E-3 F210				; retract 3mm
