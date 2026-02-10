@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: 0.9.3 (2026-02-07)
+; Version: 0.9.4 (2026-02-10)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; STATUS:
@@ -92,18 +92,26 @@ G1 E-30 F1000		; retract 30 mm
 ;
 ; next_extruder >= 0 → filament #1
 ; ...
-; next_extruder <= 28 → filament #29
-; Slots spaced in 10 mm increments from X-19 (slot 1) to X261 (slot 29).
+; next_extruder <= 21 → filament #22
+; Slots spaced in 10 mm increments from X-19 (slot 1) to X181 (slot 22).
 ; Higher filament number = farther right.
 ;
-; Would you really print with 29 different filaments? (Yes, it's supported… but why???)
+; Would you really print with 22 different filaments? (Yes, it's supported… but why???)
 
-{if next_extruder >= 0 && next_extruder <= 28}
+{if next_extruder >= 0 && next_extruder <= 21} ; if using VL53L0X
 G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
 M400 P400	; 400ms wait
 {else}
 M400 U1		; invalid slot user pause
 {endif}
+
+; uncomment if using VL53L1X
+; {if next_extruder >= 0 && next_extruder <= 28} 
+; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
+; M400 P400	; 400ms wait
+; {else}
+; M400 U1		; invalid slot user pause
+; {endif}
 
 
 ; === Reset wiper & feeder encoding ===
