@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: 0.9.4 (2026-02-10)
+; Version: 0.9.4 (2026-02-11)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; STATUS:
@@ -87,29 +87,29 @@ G1 E3 F120			; slight push
 G1 E-30 F1000		; retract 30 mm
 
 
-; === Filament number communication ===
+; === Filament slot communication ===
 ; Because apparently 4 colors wasn’t enough…
 ;
 ; next_extruder >= 0 → filament #1
 ; ...
-; next_extruder <= 22 → filament #23
-; Slots spaced in 10 mm increments from X-19 (slot 1) to X201 (slot 23).
+; next_extruder <= 28 → filament #29
+; Slots spaced in 10 mm increments
 ; Higher filament number = farther right.
 ;
-; Would you really print with 23 different filaments? Yes, it's supported… but why???
+; Would you really print with more than 16 different filaments? Yes, it's supported… but why???
 
 {if next_extruder >= 0 && next_extruder <= 22} ; if using VL53L0X
 G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
-M400 P400	; 400ms wait
+M400 S1	; 1sec wait
 {else}
 M400 U1		; invalid slot user pause
 {endif}
 
 ; bro what are you printing???
 ; uncomment if using VL53L1X
-; {if next_extruder >= 0 && next_extruder <= 28} 
+; {if next_extruder >= 0 && next_extruder <= 28} ; if using VL53L1X
 ; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
-; M400 P400	; 400ms wait
+; M400 S1	; 1ssec wait
 ; {else}
 ; M400 U1		; invalid slot user pause
 ; {endif}
