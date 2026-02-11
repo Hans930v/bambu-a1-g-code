@@ -5,7 +5,7 @@
 ; =========================================================================
 ; STATUS:
 ; Gcode logic: final 
-; Hardware: W.I.P.
+; EFAC Hardware & Firmware: W.I.P.
 ; Version will bump up to 1.0.0 once hardware is complete and tuned
 ; =========================================================================
 ; NOTE:
