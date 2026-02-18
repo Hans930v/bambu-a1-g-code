@@ -1,11 +1,11 @@
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: 0.9.4 (2026-02-11)
+; Version: 0.9.5 (2026-02-17)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; STATUS:
 ; Gcode logic: final 
-; EFAC Hardware & Firmware: W.I.P.
+; Hardware: W.I.P.
 ; Version will bump up to 1.0.0 once hardware is complete and tuned
 ; =========================================================================
 ; NOTE:
@@ -67,7 +67,7 @@ G1 E-3 F210				; retract 3mm
 G1 X267 F18000			; fast move to cutter
 G1 X278 F400			; slow move to cutter
 ; If cutter error occurs, reduce X value slightly (use 2nd/3rd row)
-G1 X283 E-5 F80
+G1 X283.7 E-5 F80
 ; Alternatives:
 ; G1 X282 E-5 F80
 ; G1 X281 E-5 F80
@@ -98,18 +98,18 @@ G1 E-30 F1000		; retract 30 mm
 ;
 ; Would you really print with more than 16 different filaments? Yes, it's supported… but why???
 
-{if next_extruder >= 0 && next_extruder <= 22} ; if using VL53L0X
+{if next_extruder >= 0 && next_extruder <= 19} ; if using VL53L0X
 G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
-M400 S1	; 1sec wait
+M400 S2	; 2sec wait
 {else}
 M400 U1		; invalid slot user pause
 {endif}
 
 ; bro what are you printing???
-; uncomment if using VL53L1X
-; {if next_extruder >= 0 && next_extruder <= 28} ; if using VL53L1X
+; uncomment if using VL53L1X (not tested)
+; {if next_extruder >= 0 && next_extruder <= 28} ; if using VL53L1X (not tested)
 ; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
-; M400 S1	; 1ssec wait
+; M400 S2	; 2ssec wait
 ; {else}
 ; M400 U1		; invalid slot user pause
 ; {endif}
