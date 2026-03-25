@@ -10,7 +10,7 @@
 ; Original Files:
 ;   - AMS reference version (A1 2025-10-31):
 ;		https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
-;   - EFAC-A1 (2025-01-09):
+;   - EFAC-A1 (2025-03-25):
 ;		https://github.com/Hans930v/bambu-a1-g-code/blob/EFAC-A1-EXPERIMENTAL/change-filament/EFAC-A1.gcode
 ;
 ; =========================================================================
