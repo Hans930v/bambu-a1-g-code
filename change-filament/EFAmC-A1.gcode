@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.5 (2026-03-25)
+; Version: 1.0.6 (2026-03-25)
 ; Manual AMS? MMS? K
 ; =========================================================================
 ; NOTE:
@@ -60,7 +60,7 @@ G1 X257 F18000           ; fast move to cutter
 M400
 M17 X0.8                 ; increase X motor current
 M400
-; Cutter move (no retract during cut)
+; Cutter move
 G1 X283.7 F400           ; max cutter move without cutter stuck error
 ; Alternatives:
 ; G1 X283 F400
@@ -74,7 +74,7 @@ G1 X257 F6000            ; move away from cutter
 M400
 M17 X0.65                ; restore normal X motor current
 M400
-; ====================
+; === Cut filament end ===
 
 G1 X260 F6000	; move away from cutter
 M400			; wait for all moves to finish
@@ -96,7 +96,7 @@ G1 E-30 F1000		; retract 30 mm
 ;
 ; next_extruder >= 0 → filament #1
 ; ...
-; next_extruder <= 24 → filament #25
+; next_extruder <= 28 → filament #29
 ; Slots spaced in 10 mm increments from X-19 (slot 1) to X261 (slot 29).
 ; Higher filament number = farther right.
 ;
@@ -110,13 +110,15 @@ M400 U1		; invalid slot user pause
 {endif}
 
 ; bro what are you printing???
-; uncomment if using VL53L1X (not tested)
+; uncomment if using VL53L1X and comment out the 1st logic (not tested)
 ; {if next_extruder >= 0 && next_extruder <= 28} ; if using VL53L1X (not tested)
 ; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
 ; M400 S2	; 2ssec wait
 ; {else}
 ; M400 U1		; invalid slot user pause
 ; {endif}
+
+; === Filament number communication end ===
 
 
 ; === Reset wiper & feeder encoding ===
@@ -134,6 +136,8 @@ M400 U1             ; swap your filaments here
 ;   - Pull out old filament
 ;   - Push in new filament
 ;	- Hit resume printing once done. That's it!
+; === Wait for external feeder end ===
+
 
 ; === Load new filament ===
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
@@ -153,6 +157,7 @@ G92 E0	; reset extruder
 M1002 set_filament_type:{filament_type[next_extruder]}
 M1002 set_filament_loaded:1
 M1002 set_filament_changed:1
+; === Load new filament end ===
 
 
 ; =========================================================================
@@ -319,6 +324,7 @@ M400
 G92 E0 								; reset extruder
 G1 E-[new_retract_length_toolchange] F1800
 M400
+
 
 ; wipe
 M106 P1 S204
