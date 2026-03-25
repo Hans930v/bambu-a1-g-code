@@ -76,7 +76,7 @@ G1 X257 F18000           ; fast move to cutter
 M400
 M17 X0.8                 ; increase X motor current
 M400
-; Cutter move (no retract during cut)
+; Cutter move
 G1 X283.7 F400           ; max cutter move without cutter stuck error
 ; Alternatives:
 ; G1 X283 F400
@@ -90,7 +90,7 @@ G1 X257 F6000            ; move away from cutter
 M400
 M17 X0.65                ; restore normal X motor current
 M400
-; ====================
+; === Cut filament end ===
 
 G1 X260 F6000	; move away from cutter
 M400			; wait for all moves to finish
@@ -107,16 +107,16 @@ G1 E3 F120			; slight push
 G1 E-30 F1000		; retract 30 mm
 
 
-; === Filament slot communication ===
+; === Filament number communication ===
 ; Because apparently 4 colors wasn’t enough…
 ;
 ; next_extruder >= 0 → filament #1
 ; ...
 ; next_extruder <= 28 → filament #29
-; Slots spaced in 10 mm increments
+; Slots spaced in 10 mm increments from X-19 (slot 1) to X261 (slot 29).
 ; Higher filament number = farther right.
 ;
-; Would you really print with more than 16 different filaments? Yes, it's supported… but why???
+; Would you really print with 29 different filaments? (Yes, it's supported… but why???)
 
 {if next_extruder >= 0 && next_extruder <= 19} ; if using VL53L0X
 G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
@@ -126,13 +126,15 @@ M400 U1		; invalid slot user pause
 {endif}
 
 ; bro what are you printing???
-; uncomment if using VL53L1X (not tested)
+; uncomment if using VL53L1X and comment out the 1st logic (not tested)
 ; {if next_extruder >= 0 && next_extruder <= 28} ; if using VL53L1X (not tested)
 ; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
 ; M400 S2	; 2ssec wait
 ; {else}
 ; M400 U1		; invalid slot user pause
 ; {endif}
+
+; === Filament number communication end ===
 
 
 ; === Reset wiper & feeder encoding ===
@@ -170,6 +172,7 @@ G92 E0	; reset extruder
 M1002 set_filament_type:{filament_type[next_extruder]}
 M1002 set_filament_loaded:1
 M1002 set_filament_changed:1
+; === Load new filament end ===
 
 
 ; =========================================================================
