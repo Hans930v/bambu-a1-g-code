@@ -1,6 +1,6 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.4 (2026-02-18)
+; Version: 1.0.5 (2026-03-25)
 ; Manual AMS? MMS? K
 ; =========================================================================
 ; NOTE:
@@ -50,18 +50,31 @@ M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 
 ; === Cut filament ===
 M400
-M412 S0					; disable runout detection temporarily
+M412 S0                  ; disable runout detection temporarily
 M400
-G1 E-7 F250				; retract 7 mm
-G1 E-5 F230				; retract 5mm
-G1 E-3 F210				; retract 3mm
-G1 X267 F18000			; fast move to cutter
-G1 X278 F400			; slow move to cutter
-; If cutter error occurs, reduce X value slightly (use 2nd/3rd row)
-G1 X283.7 E-5 F80
+G1 E-7 F250              ; retract 7 mm
+G1 E-5 F230              ; retract 5 mm
+G1 E-3 F210              ; retract 3 mm
+G1 X257 F18000           ; fast move to cutter
+; Boost X-axis current for cutting
+M400
+M17 X0.8                 ; increase X motor current
+M400
+; Cutter move (no retract during cut)
+G1 X283.7 F400           ; max cutter move without cutter stuck error
 ; Alternatives:
-; G1 X282 E-5 F80
-; G1 X281 E-5 F80
+; G1 X283 F400
+; G1 X282 F400
+; G1 X281 F400
+
+; Retract after cut
+G1 E-5 F1000             ; retract 5 mm after cutting
+G1 X257 F6000            ; move away from cutter
+; Reset X-axis current
+M400
+M17 X0.65                ; restore normal X motor current
+M400
+; ====================
 
 G1 X260 F6000	; move away from cutter
 M400			; wait for all moves to finish
