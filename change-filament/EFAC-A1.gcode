@@ -76,7 +76,7 @@ G1 X257 F18000           ; fast move to cutter
 M400
 M17 X0.8                 ; increase X motor current
 M400
-; Cutter move
+; Cutter move (no retract during cut)
 G1 X283.7 F400           ; max cutter move without cutter stuck error
 ; Alternatives:
 ; G1 X283 F400
