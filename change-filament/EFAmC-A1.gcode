@@ -149,7 +149,7 @@ M400              		; short pause
 
 G92 E0					; reset extruder
 G1 E70 F300          	; purge old filament
-G1 E5 F120				; complete load (total 90 mm)
+G1 E5 F120				; complete load (total 75 mm)
 M400					; wait
 
 ; Inform firmware: new filament active
