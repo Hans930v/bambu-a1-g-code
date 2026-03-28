@@ -1,11 +1,11 @@
 ; =========================================================================
 ; Acknowledgements:
-;   - avatorl for the manual filament change baseline
+;   - avatorl & steven52880 for the manual filament change baseline
 ;   - MrMonkey1302 for the proposed current boost & homing PR
 ;   - Bambu Lab for the original AMS G-code logic
 ; =========================================================================
 ; EFAC-A1: External Feeder–Assisted Filament Change for Bambu Lab A1 (EXPERIMENTAL)
-; Version: 0.9.7 (2026-03-25)
+; Version: 0.9.7 (2026-03-28)
 ; Not an AMS... but kinda feels like it
 ; =========================================================================
 ; STATUS:
@@ -20,7 +20,7 @@
 ; Original Files:
 ;   - AMS reference version (A1 2025-10-31):
 ;      https://github.com/Hans930v/bambu-a1-g-code/blob/main/change-filament/change-filament-original.gcode
-;   - Manual Filament Change v3 by avatorl:
+;   - Manual Filament Change v3 by avatorl & steven52880:
 ;      https://github.com/avatorl/bambu-a1-g-code/blob/main/change-filament/a1-manual-filament-change-v3.gcode
 ;	- Pull Request by MrMonkey1302:
 ;	   https://github.com/avatorl/bambu-a1-g-code/pull/17
@@ -63,6 +63,8 @@ M106 P1 S0								; turn off part cooling fan
 M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 {endif}
 
+; Fast move to wiper start to avoid any ooze on print
+G1 X-38.2 F18000
 
 ; === Cut filament ===
 M400
