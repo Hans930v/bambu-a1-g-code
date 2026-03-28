@@ -47,6 +47,8 @@ M106 P1 S0								; turn off part cooling fan
 M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 {endif}
 
+; Fast move to wiper start to avoid any ooze on print
+G1 X-38.2 F18000
 
 ; === Cut filament ===
 M400
