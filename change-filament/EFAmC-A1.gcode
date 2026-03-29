@@ -1,7 +1,11 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.8 (2026-03-28)
+; Version: 1.0.9 (2026-03-29)
 ; Manual AMS? MMS? K
+; =========================================================================
+; NOTE BEFORE USE:
+;    - OrcaSlicer users (as of version 2.3.2 and nightly 2.4.0-dev): 
+;      - "Fan speed-up time" is incompatable with this gcode. Disable or accept incorrect fan speeds (this does not affect bambu studio's "Pre start fan time")
 ; =========================================================================
 ; NOTE:
 ; This system provides AMS-like behavior without using an external feeder,
@@ -19,8 +23,7 @@
 ; Modifications in this version:
 ;   - Added movement before initial retraction to prevent oozing onto print
 ;   - Removed wipe directly after flush
-;   - Changed fan speed (80% > 100%) and wait time (3s to 5s) to ensure wipe removes filament before resuming
-;   - Modified the AMS flush logic to change fan speed (0%) during flushing
+;   - Change final wipe to wait 4 seconds instead of 3
 ;
 ; =========================================================================
 
@@ -165,18 +168,20 @@ M1002 set_filament_changed:1
 
 
 ; =========================================================================
-; AMS FLUSH LOGIC (MODIFIED)
+; AMS FLUSH LOGIC (UNMODIFIED)
 ; =========================================================================
-; Modifications made:
-;   - Fan speeds before extruding have been set to 0%
-;       (This stops filament from being blown off the purge plate before wiping)
+; This section is sacred. Do not touch.
+; Seriously. Hands off. It’s like the printer’s holy scripture.
 ; -------------------------------------------------------------------------
+; This entire flushing section is copied 1:1 from the official
+; Bambu Lab AMS filament change gcode.
 ;
 ; No logic, math, constants, or sequencing have been altered.
 ; This is REQUIRED for:
 ;   - Correct slicer flush accounting (MODEL / FLUSHED / TOWER / TOTAL)
 ;   - Firmware recognition of AMS-like flushing behavior
 ;
+; Do NOT optimize, refactor, or simplify this section.
 ; =========================================================================
 {if flush_length_1 > 1}
 ; FLUSH_START
@@ -184,7 +189,7 @@ M1002 set_filament_changed:1
 M400
 M1002 set_filament_type:UNKNOWN
 M109 S[flush_temperatures[next_extruder]]
-M106 P1 S0              ; disabled the fan while extruding to stop filament from falling off purger until wipe
+M106 P1 S60
 {if flush_length_1 > 23.7}
 G1 E23.7 F{flush_volumetric_speeds[previous_extruder]/2.4053*60} ; do not need pulsatile flushing for start part
 G1 E{(flush_length_1 - 23.7) * 0.02} F50
@@ -221,7 +226,7 @@ M106 P1 S0
 {endif}
 
 {if flush_length_2 > 1}
-M106 P1 S0              ; disabled the fan while extruding to stop filament from falling off purger until wipe
+M106 P1 S60
 ; FLUSH_START
 G1 E{flush_length_2 * 0.18} F{flush_volumetric_speeds[next_extruder]/2.4053*60}
 G1 E{flush_length_2 * 0.02} F50
@@ -254,7 +259,7 @@ M106 P1 S0
 {endif}
 
 {if flush_length_3 > 1}
-M106 P1 S0              ; disabled the fan while extruding to stop filament from falling off purger until wipe
+M106 P1 S60
 ; FLUSH_START
 G1 E{flush_length_3 * 0.18} F{flush_volumetric_speeds[next_extruder]/2.4053*60}
 G1 E{flush_length_3 * 0.02} F50
@@ -287,7 +292,7 @@ M106 P1 S0
 {endif}
 
 {if flush_length_4 > 1}
-M106 P1 S0              ; disabled the fan while extruding to stop filament from falling off purger until wipe
+M106 P1 S60
 ; FLUSH_START
 G1 E{flush_length_4 * 0.18} F{flush_volumetric_speeds[next_extruder]/2.4053*60}
 G1 E{flush_length_4 * 0.02} F50
@@ -315,8 +320,8 @@ M400
 
 
 ; wipe
-M106 P1 S255
-M400 S5
+M106 P1 S178
+M400 S4
 G1 X-38.2 F18000
 G1 X-48.2 F3000
 G1 X-38.2 F18000
