@@ -1,7 +1,11 @@
 ; =========================================================================
 ; EFAmC-A1: External Feeder–Assisted manual Filament Change for Bambu Lab A1
-; Version: 1.0.6 (2026-03-25)
+; Version: 1.0.9 (2026-03-29)
 ; Manual AMS? MMS? K
+; =========================================================================
+; NOTE BEFORE USE:
+;    - OrcaSlicer users (as of version 2.3.2 and nightly 2.4.0-dev): 
+;      - "Fan speed-up time" is incompatable with this gcode. Disable or accept incorrect fan speeds (this does not affect bambu studio's "Pre start fan time")
 ; =========================================================================
 ; NOTE:
 ; This system provides AMS-like behavior without using an external feeder,
@@ -17,16 +21,17 @@
 ; This file is a DERIVATIVE WORK based on the original implementation above.
 ;
 ; Modifications in this version:
-;   - Changed M400 S15 to M400 U1 (user pause) for user pause
+;   - Added movement before initial retraction to prevent oozing onto print
+;   - Removed wipe directly after flush
+;   - Change final wipe to wait 4 seconds instead of 3
 ;
-; This version converts EFAC-A1 to a manual filament change workflow (no external feeder required)
 ; =========================================================================
 
 
 ; === Initialization ===
-M1007 S0 		; turn off mass estimation
-G392 S0			; turn off clog detection
-M204 S9000		; set print acceleration
+M1007 S0 		        ; turn off mass estimation
+G392 S0			        ; turn off clog detection
+M204 S9000		        ; set print acceleration
 
 
 ; === Lift toolhead ===
@@ -42,55 +47,53 @@ M400
 
 
 ; === Reheat nozzle ===
-M106 P1 S0								; turn off part cooling fan
+M106 P1 S0				; turn off part cooling fan
 {if old_filament_temp > 142 && next_extruder < 255}
 M104 S[old_filament_temp]	; restore old filament temperature (if above 142°C)
 {endif}
 
-; Fast move to wiper start to avoid any ooze on print
+; Fast move to wiper start to avoid any oozing on print
 G1 X-38.2 F18000
+
 
 ; === Cut filament ===
 M400
-M412 S0                  ; disable runout detection temporarily
+M412 S0                 ; disable runout detection temporarily
 M400
-G1 E-7 F250              ; retract 7 mm
-G1 E-5 F230              ; retract 5 mm
-G1 E-3 F210              ; retract 3 mm
-G1 X257 F18000           ; fast move to cutter
+G1 E-7 F250             ; retract 7 mm
+G1 E-5 F230             ; retract 5 mm
+G1 E-3 F210             ; retract 3 mm
+G1 X257 F18000          ; fast move to cutter
 ; Boost X-axis current for cutting
 M400
-M17 X0.8                 ; increase X motor current
+M17 X0.8                ; increase X motor current
 M400
 ; Cutter move
-G1 X283.7 F400           ; max cutter move without cutter stuck error
+G1 X283.7 F400          ; max cutter move without cutter stuck error
 ; Alternatives:
 ; G1 X283 F400
 ; G1 X282 F400
 ; G1 X281 F400
 
 ; Retract after cut
-G1 E-5 F1000             ; retract 5 mm after cutting
-G1 X257 F6000            ; move away from cutter
+G1 E-5 F1000            ; retract 5 mm after cutting
+G1 X257 F6000           ; move away from cutter
 ; Reset X-axis current
 M400
-M17 X0.65                ; restore normal X motor current
-M400
+M17 X0.65               ; restore normal X motor current
+M400                    ; wait for all moves to finish
 ; === Cut filament end ===
-
-G1 X260 F6000	; move away from cutter
-M400			; wait for all moves to finish
 
 
 ; === Purge wiper ===
-G1 X-38.2 F18000     ; fast move to wiper start
-G1 X-48.2 F3000      ; slow move to wiper end
-M400                 ; wait
+G1 X-38.2 F18000        ; fast move to wiper start
+G1 X-48.2 F3000         ; slow move to wiper end
+M400                    ; wait
 
 
 ; === Unload filament ===
-G1 E3 F120			; slight push
-G1 E-30 F1000		; retract 30 mm
+G1 E3 F120			    ; slight push
+G1 E-30 F1000		    ; retract 30 mm
 
 
 ; === Filament number communication ===
@@ -108,7 +111,7 @@ G1 E-30 F1000		; retract 30 mm
 G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
 M400 S2	; 2sec wait
 {else}
-M400 U1		; invalid slot user pause
+M400 U1		            ; invalid slot user pause
 {endif}
 
 ; bro what are you printing???
@@ -117,7 +120,7 @@ M400 U1		; invalid slot user pause
 ; G1 X{-19 + (next_extruder * 10)} F18000 ; safe slot move
 ; M400 S2	; 2ssec wait
 ; {else}
-; M400 U1		; invalid slot user pause
+; M400 U1		        ; invalid slot user pause
 ; {endif}
 
 ; === Filament number communication end ===
@@ -132,8 +135,9 @@ M400
 ; === Wait for external feeder ===
 ; This is the part where the printer just stares into space
 ; while you do the heavy lifting.
+M106 P1 S0 ; make sure fan is off before pause to slow cool down
 M1002 set_filament_type:UNKNOWN
-M400 U1             ; swap your filaments here
+M400 U1                 ; swap your filaments here
 ; You will:
 ;   - Pull out old filament
 ;   - Push in new filament
@@ -142,6 +146,7 @@ M400 U1             ; swap your filaments here
 
 
 ; === Load new filament ===
+M106 P1 S0              ; turn fan off
 M109 S[nozzle_temperature_range_high] 	; set nozzle temp & wait
 M412 S1					; re-enable filament runout detection
 G1 E7 F500				; fast short initial grab (7mm)
@@ -304,33 +309,19 @@ G1 E{flush_length_4 * 0.02} F50
 ; === END OF AMS FLUSH LOGIC (UNMODIFIED) ===
 
 
-; === Wipe after purge ===
-M106 P1 S204	; 80% fan speed
-M400 S3			; wait 3 sec
-
-G1 X-38.2 F18000
-G1 X-48.2 F3000
-G1 X-38.2 F18000
-G1 X-48.2 F3000
-G1 X-38.2 F18000
-G1 X-48.2 F3000
-M106 P1 S0
-M400
-
-
 ; === Finalizing ===
-M106 P1 S178						; 70% fan speed
+M106 P1 S0				; 0% fan speed
 M109 S[new_filament_temp]
 G1 E6 F{new_filament_e_feedrate}	; compensate for spillage
 M400
-G92 E0 								; reset extruder
+G92 E0 					; reset extruder
 G1 E-[new_retract_length_toolchange] F1800
 M400
 
 
 ; wipe
-M106 P1 S204
-M400 S3
+M106 P1 S178
+M400 S4
 G1 X-38.2 F18000
 G1 X-48.2 F3000
 G1 X-38.2 F18000
@@ -351,9 +342,9 @@ M204 S[default_acceleration]
 {endif}
 
 ;uncomment this if you're using clog detection, just remove ; before G392
-;G392 S1		; enable clog detection
+;G392 S1		        ; enable clog detection
 
-M1007 S1 	; restore mass estimation
-M629		; finalize filament change lifecycle
+M1007 S1 	            ; restore mass estimation
+M629		            ; finalize filament change lifecycle
 
 ; === Resume printing ===
